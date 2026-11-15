@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="pt-PT" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Seven Trading</title>
+<link rel="icon" href="logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<canvas id="bg2" class="hid"></canvas>
+<div id="intro" class="hid"><div class="ibox"><img src="logo.svg" alt=""><h1>Seven Trading</h1><p id="iwel"></p><div class="ldb"><i></i></div></div></div>
+<div id="auth" class="hid"><canvas id="bg"></canvas><div class="card authc"><div class="brand"><img src="logo.svg" alt=""><div><h1>Seven Trading</h1><p class="sub">Disciplina em cada operação</p></div></div>
+<div class="row2" id="tabs"><button class="btn sec on" id="t_l">Entrar</button><button class="btn sec" id="t_r">Criar conta</button></div>
+<div id="f_login"><label>Email ou telemóvel</label><input id="l_id" autocomplete="username"><label>Palavra-passe</label><input type="password" id="l_pw" autocomplete="current-password"><a class="lnk" id="lnk_rec" style="text-align:right">Esqueci a palavra-passe</a><button class="btn" id="l_go">Entrar</button></div>
+<div id="f_reg" class="hid"><label>Nome</label><input id="r_nome"><label>Email</label><input type="email" id="r_email"><label>Telemóvel (ex.: 84 123 4567)</label><input type="tel" id="r_tel"><label>Palavra-passe (mín. 6)</label><input type="password" id="r_pw"><label>Repetir palavra-passe</label><input type="password" id="r_pw2"><p class="sub" style="margin:8px 0 0">Basta email ou telemóvel. Vamos pedir um código de verificação.</p><button class="btn" id="r_go">Continuar</button></div>
+<div id="f_rec" class="hid"><p class="sub" style="margin-top:14px">Indica o email ou telemóvel da tua conta para definir uma nova palavra-passe.</p><label>Email ou telemóvel</label><input id="rc_id"><button class="btn" id="rc_go">Enviar código</button><a class="lnk" id="rc_back">Voltar</a></div>
+<div id="f_code" class="hid"><p class="sub" style="margin-top:14px">Verificação de <b id="c_dest"></b></p><div class="demo">Modo demonstração: o envio real de SMS/email ainda não está ligado, por isso o código aparece aqui:<b id="c_demo"></b></div><label>Código de 6 dígitos</label><input id="c_in" inputmode="numeric" maxlength="6"><button class="btn" id="c_go">Confirmar</button><a class="lnk" id="c_back">Cancelar</a></div>
+<div id="f_new" class="hid"><p class="sub" style="margin-top:14px">Código confirmado. Escolhe a nova palavra-passe.</p><label>Nova palavra-passe</label><input type="password" id="n_pw"><label>Repetir</label><input type="password" id="n_pw2"><button class="btn" id="n_go">Guardar</button></div>
+<p class="sub" id="amsg" style="margin:10px 0 0;color:var(--rd)"></p></div></div>
+<main id="app" class="hid">
+<h1><img src="logo.svg" class="lg" alt=""> Seven Trading <span id="hello" class="mut" style="font-size:.85rem;font-weight:400;margin-left:8px"></span></h1>
+<p class="sub" id="sub"></p>
+<div class="warn" id="warn"></div>
+<nav>
+<button data-t="painel" class="on">Painel</button>
+<button data-t="diario">Diário</button>
+<button data-t="plano">Plano</button>
+<button data-t="editar">Personalizar</button>
+<button data-t="conta">Conta</button>
+</nav>
+
+<section id="painel">
+<div class="card" id="lim"></div>
+<div class="card"><h2>Progresso real</h2>
+<div id="prog"></div></div>
+<div class="card"><h2>Ajuste de risco por trade</h2><div id="adj"></div></div>
+<div class="card"><h2>Evolução do saldo</h2><div id="chart"></div></div>
+<div class="card"><h2>Estatísticas</h2><div id="stats"></div></div>
+<div class="card"><h2>Projeção teórica</h2><div id="proj"></div>
+<p class="sub" style="margin:8px 0 0">Expectativa estatística antes de custos (spread, comissão, slippage). Não é previsão.</p></div>
+<div class="card"><h2>Marcos</h2><div class="tb"><table id="marcos"></table></div></div>
+</section>
+
+<section id="diario" class="hid">
+<div class="card"><h2>Novo trade</h2>
+<div class="grid">
+<div><label>Data</label><input type="date" id="f_data"></div>
+<div><label>Instrumento</label><input id="f_inst" list="insts" value="XAUUSD"><datalist id="insts"><option>XAUUSD</option><option>EURUSD</option><option>GBPUSD</option><option>USDJPY</option><option>AUDUSD</option></datalist></div>
+<div><label>Direção</label><select id="f_dir"><option>BUY</option><option>SELL</option></select></div>
+<div><label>RR (alterna 1:4 / 1:5)</label><select id="f_rr"></select></div>
+<div><label>Risco (USC)</label><input type="number" id="f_risco" step="any"></div>
+<div><label>Resultado</label><select id="f_res"><option>Win</option><option>Loss</option><option>BE</option></select></div>
+<div><label>P/L líquido (USC)</label><input type="number" id="f_pl" step="any"></div>
+<div><label>Setup / motivo</label><input id="f_setup"></div>
+<div class="full"><label>Notas / emoção</label><textarea id="f_nota"></textarea></div>
+<div class="full"><button class="btn" id="add">Registar trade</button></div>
+</div>
+<p class="sub" style="margin:8px 0 0">O P/L é preenchido sugerido (Win = risco × RR, Loss = −risco). Ajusta para o valor líquido real depois de custos.</p></div>
+<div class="card"><h2>Histórico</h2><div id="list"></div></div>
+<div class="card"><h2>Exportar / importar</h2>
+<p class="sub">Exportar copia os trades para colares no Excel. Para importar, cola linhas do Excel (ou do teu Diário) ou escolhe um ficheiro CSV.</p>
+<textarea id="io" placeholder="Os dados aparecem aqui…" style="min-height:110px"></textarea>
+<div class="row2" style="margin-top:8px"><button class="btn sec" id="exp">Exportar</button><button class="btn" id="imp">Importar</button></div>
+<input type="file" id="file" accept=".csv,.tsv,.txt" style="margin-top:8px">
+<p class="sub" id="iomsg" style="margin:8px 0 0"></p></div>
+</section>
+
+<section id="editar" class="hid">
+<div class="card"><h2>Os meus parâmetros</h2><p class="sub">Muda o que quiseres: saldo inicial, meta, risco, limites e moeda. O painel, o plano e os alertas atualizam logo.</p>
+<div class="grid" id="cfg"></div></div>
+<div class="card"><h2>O meu objetivo e regras pessoais</h2>
+<label>Objetivo (com as tuas palavras)</label><textarea id="obj" placeholder="Ex.: crescer a conta com disciplina, sem arriscar mais de 2% por trade…"></textarea>
+<label style="margin-top:12px">Adicionar regra pessoal</label>
+<div class="row2" style="grid-template-columns:1fr auto"><input id="nr" placeholder="Ex.: Não negociar à sexta depois das 18h"><button class="btn" id="addr" style="width:auto;margin:0">Adicionar</button></div>
+<div id="myr" style="margin-top:8px"></div></div>
+</section>
+
+<section id="conta" class="hid"></section>
+
+<section id="plano" class="hid">
+<div class="card" id="plan"></div>
+</section>
+</main>
+<script src="bg.js"></script>
+<script src="auth.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
