@@ -48,7 +48,8 @@ function cask(d,fn){CV=fn;$("c_dest").textContent=d;$("c_in").value="";$("c_demo
 function cin(us,first){var md=us.user_metadata||{},id=us.id,pf="u"+id+"_";
 cloudPull(id).then(function(row){if(row)cloudApply(pf,row);else if(first&&!U.length)["tp_cfg","tp_trades","tp_commit"].forEach(function(k){var v=localStorage.getItem(k);if(v)localStorage.setItem(pf+k,v)});
 if(!U.some(function(x){return x.id===id}))U.push({id:id,nome:md.nome||us.email,email:us.email,tel:md.tel||"",ver:us.email_confirmed_at?"email":"",cloud:true,criado:(us.created_at||"").slice(0,10)});s("st_users",U);go(id)})}
-if(window.SB){$("l_lbl").textContent="Email";$("rc_lbl").textContent="Email";$("r_help").textContent="O telemóvel é opcional."}else{$("rc_go").textContent="Continuar";$("r_help").textContent="Basta preencher email ou telemóvel."}
+if(window.SB){$("l_lbl").textContent="Email";$("rc_lbl").textContent="Email";$("r_help").textContent="O telemóvel é opcional.";$("rc_go").textContent="Enviar link"}else{$("rc_go").textContent="Continuar";$("r_help").textContent="Basta preencher email ou telemóvel."}
+if(window.SB)SB.auth.onAuthStateChange(function(ev){if(ev==="PASSWORD_RECOVERY"){RU=null;show("f_new")}});
 function ask(dest,cb){CV=null;$("c_demo").parentNode.style.display="";CODE=String(Math.floor(100000+Math.random()*900000));CB=cb;$("c_dest").textContent=dest;$("c_demo").textContent=CODE;$("c_in").value="";show("f_code")}
 $("t_l").onclick=function(){show("f_login")};$("t_r").onclick=function(){show("f_reg")};
 $("lnk_rec").onclick=function(){show("f_rec")};$("rc_back").onclick=$("c_back").onclick=function(){show("f_login")};
@@ -70,7 +71,7 @@ if(window.SB){if(!em)return m("Indica o teu email.");return SB.auth.signUp({emai
 if(!U.length)["tp_cfg","tp_trades","tp_commit"].forEach(function(k){var v=localStorage.getItem(k);if(v)localStorage.setItem("u"+u.id+"_"+k,v)});
 U.push(u);s("st_users",U);go(u.id)})})};
 $("rc_go").onclick=function(){var v=$("rc_id").value.trim(),u=find(v);
-if(window.SB&&!(u&&!u.cloud)){if(v.indexOf("@")<0)return m("Indica o email da tua conta.");var em=v.toLowerCase();return SB.auth.resetPasswordForEmail(em).then(function(r){if(r.error)return m(tr(r.error));cask(em,function(c){return SB.auth.verifyOtp({email:em,token:c,type:"recovery"}).then(function(x){if(x.error)return m("Código incorreto ou expirado.");RU=null;show("f_new")})})})}
+if(window.SB&&!(u&&!u.cloud)){if(v.indexOf("@")<0)return m("Indica o email da tua conta.");var em=v.toLowerCase();return SB.auth.resetPasswordForEmail(em,{redirectTo:location.origin+location.pathname}).then(function(r){if(r.error)return m(tr(r.error));m("Enviámos um link para o teu email. Abre-o neste aparelho para definires a nova palavra-passe.",1)})}
 if(!u)return m("Não encontrámos essa conta.");RU=u;show("f_new")};
 $("c_go").onclick=function(){if(CV)return CV($("c_in").value.trim());if($("c_in").value.trim()!==CODE||!CB)return m("Código incorreto.");var f=CB;CB=null;CODE="";f()};
 $("n_go").onclick=function(){var p=$("n_pw").value;if(p.length<6)return m("Mínimo 6 caracteres.");if(p!==$("n_pw2").value)return m("As palavras-passe não coincidem.");
