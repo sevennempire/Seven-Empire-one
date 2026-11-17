@@ -1,29 +1,28 @@
 var $=function(i){return document.getElementById(i)};
 function load(k,d){try{var v=localStorage.getItem(PFX+k);return v?JSON.parse(v):d}catch(e){return d}}
-function save(k,v){try{localStorage.setItem(PFX+k,JSON.stringify(v))}catch(e){}}
+function save(k,v){try{localStorage.setItem(PFX+k,JSON.stringify(v))}catch(e){}if(window.cloudPush)cloudPush()}
 function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
 function fmt(n,d){return n.toLocaleString("pt-PT",{maximumFractionDigits:d==null?2:d})+" "+cfg.moeda}
 var DEF={cap:2000,meta:100000,risco:100,ops:15,acerto:50,rrA:4,rrB:5,moeda:"USC",maxT:3,maxL:2,limD:200,limS:400,dd:15,minT:50,obj:"",regras:[],planEd:null,comp:null};
 var cfg=Object.assign({},DEF,load("tp_cfg",{})),trades=load("tp_trades",[]),commit=load("tp_commit",false);cfg.regras=(cfg.regras||[]).slice();
-var today=new Date().toISOString().slice(0,10);
+var today=new Date(Date.now()-new Date().getTimezoneOffset()*6e4).toISOString().slice(0,10);
 
 document.querySelectorAll("nav button").forEach(function(b){b.onclick=function(){
 document.querySelectorAll("nav button").forEach(function(x){x.classList.toggle("on",x===b)});
-["painel","diario","plano","editar","conta"].forEach(function(s){$(s).classList.toggle("hid",s!==b.dataset.t)})}});
+["painel","diario","analise","ferr","plano","editar","conta"].forEach(function(s){$(s).classList.toggle("hid",s!==b.dataset.t)});window.scrollTo(0,0)}});
 
 var CFG=[["cap","Saldo inicial"],["meta","Meta final"],["risco","Risco fixo por trade"],["ops","Operações por semana"],["acerto","Taxa de acerto hipotética (%)"],["rrA","Alvo RR A"],["rrB","Alvo RR B"],["maxT","Máx. trades por dia"],["maxL","Máx. perdas por dia"],["limD","Limite de perda diário"],["limS","Limite de perda semanal"],["dd","Drawdown (%) que obriga a reduzir risco"],["minT","Trades mínimos para rever o risco"]];
 $("cfg").innerHTML='<div><label>Moeda / unidade da conta</label><input data-k="moeda" data-txt="1" value="'+esc(cfg.moeda)+'" maxlength="6"></div>'+CFG.map(function(c){return '<div><label>'+c[1]+'</label><input type="number" step="any" data-k="'+c[0]+'" value="'+cfg[c[0]]+'"></div>'}).join("")+'<div class="full"><button class="ghost" id="rst" style="color:var(--mu)">repor valores do plano</button></div>';
 document.querySelectorAll("#cfg input").forEach(function(i){i.oninput=function(){if(i.dataset.txt){cfg.moeda=i.value.trim()||"USC";save("tp_cfg",cfg);render();formDefaults();return}var v=parseFloat(i.value);if(v>0){cfg[i.dataset.k]=v;save("tp_cfg",cfg);render();formDefaults()}}});
-$("rst").onclick=function(){cfg=Object.assign({},DEF,{obj:cfg.obj,regras:cfg.regras,planEd:cfg.planEd,comp:cfg.comp});save("tp_cfg",cfg);document.querySelectorAll("#cfg input").forEach(function(i){i.value=cfg[i.dataset.k]});render();formDefaults()};
+$("rst").onclick=function(){cfg=Object.assign({},DEF,{obj:cfg.obj,regras:cfg.regras,planEd:cfg.planEd,comp:cfg.comp,check:cfg.check,mSem:cfg.mSem,mMes:cfg.mMes});save("tp_cfg",cfg);document.querySelectorAll("#cfg input").forEach(function(i){i.value=cfg[i.dataset.k]});render();formDefaults()};
 
 function nextRR(){var n=trades.length,per=Math.round(cfg.ops),wk=Math.floor(n/per),i=n%per;return (wk+i)%2===0?cfg.rrA:cfg.rrB}
 function weekOf(n){return Math.floor(n/Math.round(cfg.ops))+1}
 function suggest(){var r=$("f_res").value,k=parseFloat($("f_risco").value)||0,rr=parseFloat($("f_rr").value)||0;
 $("f_pl").value=r==="Win"?k*rr:r==="Loss"?-k:0}
 function formDefaults(){$("f_data").value=today;$("f_risco").value=cfg.risco;
-$("f_rr").innerHTML=[cfg.rrA,cfg.rrB].map(function(v){return '<option value="'+v+'">1:'+v+'</option>'}).join("");
 $("f_rr").value=nextRR();suggest()}
-["f_res","f_rr","f_risco"].forEach(function(i){$(i).onchange=suggest});
+["f_res","f_rr","f_risco"].forEach(function(i){$(i).onchange=$(i).oninput=suggest});
 
 $("add").onclick=function(){
 var pl=parseFloat($("f_pl").value);if(isNaN(pl)){alert("Indica o P/L.");return}
@@ -34,7 +33,7 @@ function del(id){if(confirm("Apagar este trade?")){trades=trades.filter(function
 trades.forEach(function(t,i){t.sem=weekOf(i)});save("tp_trades",trades);formDefaults();render()}}
 
 function head(){var c=cfg,pc=c.risco/c.cap*100;$("sub").textContent="XAUUSD + Forex · Day trading · "+fmt(c.cap,0)+" → "+fmt(c.meta,0);
-$("warn").innerHTML='<b>Aviso de risco:</b> arriscar '+fmt(c.risco,0)+' numa conta de '+fmt(c.cap,0)+' é '+pc.toFixed(1)+'% por operação. Cinco perdas seguidas = '+fmt(c.risco*5,0)+' ('+(c.risco*5/c.cap*100).toFixed(0)+'% do capital). O plano não garante resultados.'}
+var wn=$("warn");if(wn)wn.innerHTML='<b>Aviso de risco:</b> arriscar '+fmt(c.risco,0)+' numa conta de '+fmt(c.cap,0)+' é '+pc.toFixed(1)+'% por operação. Cinco perdas seguidas = '+fmt(c.risco*5,0)+' ('+(c.risco*5/c.cap*100).toFixed(0)+'% do capital). O plano não garante resultados.'}
 function render(){head();renderPlan();
 var c=cfg,p=c.acerto/100,n=Math.round(c.ops),nA=Math.ceil(n/2),nB=n-nA,avg=(nA*c.rrA+nB*c.rrB)/n;
 var exp=n*p*c.risco*avg-n*(1-p)*c.risco,weeks=exp>0?Math.ceil((c.meta-c.cap)/exp):0;

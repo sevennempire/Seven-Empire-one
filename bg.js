@@ -1,8 +1,8 @@
-function bgAnim(id){var cv=document.getElementById(id||"bg"),x=cv.getContext("2d"),D=Math.min(window.devicePixelRatio||1,2),W,H,S,CW,cs=[],px=0,pr=100,fx=[],rm=window.matchMedia&&matchMedia("(prefers-reduced-motion:reduce)").matches;
+function bgAnim(id){var cv=document.getElementById(id||"bg"),x=cv.getContext("2d"),D=Math.min(window.devicePixelRatio||1,innerWidth<700?1.5:2),W,H,S,CW,cs=[],px=0,pr=100,fx=[],rm=window.matchMedia&&matchMedia("(prefers-reduced-motion:reduce)").matches;
 function mk(){var o=pr,c=o+(Math.random()-.48)*5+(100-o)*.01,h=Math.max(o,c)+Math.random()*2.5,l=Math.min(o,c)-Math.random()*2.5;pr=c;return{o:o,h:h,l:l,c:c}}
 function mm(d){return{buy:Math.random()<.5,rr:Math.random()<.5?4:5,win:Math.random()<.55,done:d}}
 function rs(){W=cv.width=innerWidth*D;H=cv.height=innerHeight*D;CW=(innerWidth<600?9:12)*D;S=CW*1.45;var n=Math.ceil(W/S)+3;while(cs.length<n)cs.push(mk());while(cs.length>n)cs.shift()}
-rs();addEventListener("resize",rs);cs.forEach(function(c){if(Math.random()<.12)c.m=mm(1)});
+var lw=innerWidth,lh=innerHeight;rs();addEventListener("resize",function(){if(innerWidth!==lw||Math.abs(innerHeight-lh)>160){lw=innerWidth;lh=innerHeight;rs()}});cs.forEach(function(c){if(Math.random()<.12)c.m=mm(1)});
 function draw(){x.clearRect(0,0,W,H);var mn=1e9,mx=-1e9;cs.forEach(function(c){mn=Math.min(mn,c.l);mx=Math.max(mx,c.h)});
 var T=H*.2,B=H*.8,Y=function(v){return B-(v-mn)/(mx-mn||1)*(B-T)};
 x.lineWidth=D;x.strokeStyle="rgba(255,255,255,.05)";for(var i=1;i<8;i++){x.beginPath();x.moveTo(0,H*i/8);x.lineTo(W,H*i/8);x.stroke()}
@@ -16,6 +16,6 @@ x.fillText((m.buy?"BUY":"SELL")+" 1:"+m.rr,X+10*D,y+4*D);
 if(!m.done&&X<W*.4){m.done=1;fx.push({x:X,y:y,t:m.win?"+"+m.rr*100+" USC":"−100 USC",g:m.win,a:1})}});
 fx=fx.filter(function(f){return f.a>0});x.font="700 "+15*D+"px system-ui,sans-serif";
 fx.forEach(function(f){x.globalAlpha=f.a;x.fillStyle=f.g?"#4ade80":"#f87171";x.fillText(f.t,f.x,f.y);f.y-=.6*D;f.a-=.008});x.globalAlpha=1}
-function tick(){px+=.7*D;if(px>=S){px-=S;cs.shift();var c=mk();if(Math.random()<.2)c.m=mm(0);cs.push(c)}}
-function loop(){if(!document.hidden){tick();draw()}requestAnimationFrame(loop)}
-draw();if(!rm)loop()}
+function tick(dt){px+=.042*D*dt;if(px>=S){px-=S;cs.shift();var c=mk();if(Math.random()<.2)c.m=mm(0);cs.push(c)}}
+var lt=0,gp=innerWidth<700?33:0;function loop(t){var dt=t-lt;if(!document.hidden&&dt>=gp){lt=t;tick(Math.min(dt,60));draw()}requestAnimationFrame(loop)}
+draw();if(!rm)requestAnimationFrame(loop)}

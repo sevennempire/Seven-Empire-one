@@ -2,6 +2,12 @@
 <html lang="pt-PT" data-theme="dark">
 <head>
 <meta charset="utf-8">
+<meta name="theme-color" content="#070a11">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<script>try{document.documentElement.dataset.theme=localStorage.getItem("st_theme")||"dark"}catch(e){}</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Seven Trading</title>
 <link rel="icon" href="logo.svg" type="image/svg+xml">
@@ -10,24 +16,27 @@
 <body>
 <canvas id="bg2" class="hid"></canvas>
 <div id="intro" class="hid"><div class="ibox"><img src="logo.svg" alt=""><h1>Seven Trading</h1><p id="iwel"></p><div class="ldb"><i></i></div></div></div>
+<button id="fab" class="hid" title="Novo trade">+</button>
+<div id="lock" class="hid"><img src="logo.svg" alt="" style="width:72px"><h2 style="margin:14px 0 4px;color:#fff">Seven Trading</h2><p style="color:#a0a8b5;margin:0 0 14px">Introduz o teu PIN</p><input id="k_in" type="password" inputmode="numeric" maxlength="6" style="max-width:200px;text-align:center;font-size:1.4rem;letter-spacing:.3em"><button class="btn" id="k_go" style="max-width:200px;margin-top:12px">Entrar</button><p id="k_m" class="sub" style="color:#f87171;margin:8px 0"></p><a class="lnk" id="k_out">Sair da conta</a></div>
 <div id="auth" class="hid"><canvas id="bg"></canvas><div class="card authc"><div class="brand"><img src="logo.svg" alt=""><div><h1>Seven Trading</h1><p class="sub">Disciplina em cada operação</p></div></div>
 <div class="row2" id="tabs"><button class="btn sec on" id="t_l">Entrar</button><button class="btn sec" id="t_r">Criar conta</button></div>
-<div id="f_login"><label>Email ou telemóvel</label><input id="l_id" autocomplete="username"><label>Palavra-passe</label><input type="password" id="l_pw" autocomplete="current-password"><a class="lnk" id="lnk_rec" style="text-align:right">Esqueci a palavra-passe</a><button class="btn" id="l_go">Entrar</button></div>
-<div id="f_reg" class="hid"><label>Nome</label><input id="r_nome"><label>Email</label><input type="email" id="r_email"><label>Telemóvel (ex.: 84 123 4567)</label><input type="tel" id="r_tel"><label>Palavra-passe (mín. 6)</label><input type="password" id="r_pw"><label>Repetir palavra-passe</label><input type="password" id="r_pw2"><p class="sub" style="margin:8px 0 0">Basta email ou telemóvel. Vamos pedir um código de verificação.</p><button class="btn" id="r_go">Continuar</button></div>
-<div id="f_rec" class="hid"><p class="sub" style="margin-top:14px">Indica o email ou telemóvel da tua conta para definir uma nova palavra-passe.</p><label>Email ou telemóvel</label><input id="rc_id"><button class="btn" id="rc_go">Enviar código</button><a class="lnk" id="rc_back">Voltar</a></div>
+<div id="f_login"><label id="l_lbl">Email ou telemóvel</label><input id="l_id" autocapitalize="off" autocorrect="off" autocomplete="username"><label>Palavra-passe</label><input type="password" id="l_pw" autocomplete="current-password"><a class="lnk" id="lnk_rec" style="text-align:right">Esqueci a palavra-passe</a><button class="btn" id="l_go">Entrar</button></div>
+<div id="f_reg" class="hid"><label>Nome</label><input id="r_nome"><label>Email</label><input type="email" id="r_email"><label>Telemóvel (ex.: 84 123 4567)</label><input type="tel" id="r_tel"><label>Palavra-passe (mín. 6)</label><input type="password" id="r_pw" autocomplete="new-password"><label>Repetir palavra-passe</label><input type="password" id="r_pw2" autocomplete="new-password"><p class="sub" id="r_help" style="margin:8px 0 0">Basta email ou telemóvel.</p><button class="btn" id="r_go">Criar conta</button></div>
+<div id="f_rec" class="hid"><p class="sub" style="margin-top:14px">Indica o email ou telemóvel da tua conta para definir uma nova palavra-passe.</p><label id="rc_lbl">Email ou telemóvel</label><input id="rc_id"><button class="btn" id="rc_go">Enviar código</button><a class="lnk" id="rc_back">Voltar</a></div>
 <div id="f_code" class="hid"><p class="sub" style="margin-top:14px">Verificação de <b id="c_dest"></b></p><div class="demo">Modo demonstração: o envio real de SMS/email ainda não está ligado, por isso o código aparece aqui:<b id="c_demo"></b></div><label>Código de 6 dígitos</label><input id="c_in" inputmode="numeric" maxlength="6"><button class="btn" id="c_go">Confirmar</button><a class="lnk" id="c_back">Cancelar</a></div>
-<div id="f_new" class="hid"><p class="sub" style="margin-top:14px">Código confirmado. Escolhe a nova palavra-passe.</p><label>Nova palavra-passe</label><input type="password" id="n_pw"><label>Repetir</label><input type="password" id="n_pw2"><button class="btn" id="n_go">Guardar</button></div>
+<div id="f_new" class="hid"><p class="sub" style="margin-top:14px">Código confirmado. Escolhe a nova palavra-passe.</p><label>Nova palavra-passe</label><input type="password" id="n_pw" autocomplete="new-password"><label>Repetir</label><input type="password" id="n_pw2" autocomplete="new-password"><button class="btn" id="n_go">Guardar</button></div>
 <p class="sub" id="amsg" style="margin:10px 0 0;color:var(--rd)"></p></div></div>
-<main id="app" class="hid">
+<main id="app" class="hid"><button id="acc" class="avb" title="Conta"></button>
 <h1><img src="logo.svg" class="lg" alt=""> Seven Trading <span id="hello" class="mut" style="font-size:.85rem;font-weight:400;margin-left:8px"></span></h1>
 <p class="sub" id="sub"></p>
-<div class="warn" id="warn"></div>
 <nav>
-<button data-t="painel" class="on">Painel</button>
-<button data-t="diario">Diário</button>
-<button data-t="plano">Plano</button>
-<button data-t="editar">Personalizar</button>
-<button data-t="conta">Conta</button>
+<button data-t="painel" class="on"><i>📊</i>Painel</button>
+<button data-t="diario"><i>📒</i>Diário</button>
+<button data-t="analise"><i>📈</i>Análise</button>
+<button data-t="ferr"><i>🧮</i>Ferram.</button>
+<button data-t="plano"><i>📋</i>Plano</button>
+<button data-t="editar"><i>⚙️</i>Ajustes</button>
+<button data-t="conta"><i>👤</i>Conta</button>
 </nav>
 
 <section id="painel">
@@ -48,7 +57,7 @@
 <div><label>Data</label><input type="date" id="f_data"></div>
 <div><label>Instrumento</label><input id="f_inst" list="insts" value="XAUUSD"><datalist id="insts"><option>XAUUSD</option><option>EURUSD</option><option>GBPUSD</option><option>USDJPY</option><option>AUDUSD</option></datalist></div>
 <div><label>Direção</label><select id="f_dir"><option>BUY</option><option>SELL</option></select></div>
-<div><label>RR (alterna 1:4 / 1:5)</label><select id="f_rr"></select></div>
+<div><label>Risco/retorno (1:X)</label><input type="number" id="f_rr" step="any" min="0.1" inputmode="decimal" placeholder="ex.: 3.12"></div>
 <div><label>Risco (USC)</label><input type="number" id="f_risco" step="any"></div>
 <div><label>Resultado</label><select id="f_res"><option>Win</option><option>Loss</option><option>BE</option></select></div>
 <div><label>P/L líquido (USC)</label><input type="number" id="f_pl" step="any"></div>
@@ -76,14 +85,21 @@
 <div id="myr" style="margin-top:8px"></div></div>
 </section>
 
+<section id="analise" class="hid"></section>
+<section id="ferr" class="hid"></section>
 <section id="conta" class="hid"></section>
 
 <section id="plano" class="hid">
 <div class="card" id="plan"></div>
 </section>
 </main>
+<script src="config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.0/dist/umd/supabase.min.js"></script>
+<script src="cloud.js"></script>
 <script src="bg.js"></script>
 <script src="auth.js"></script>
 <script src="script.js"></script>
+<script src="extra.js"></script>
+<script>if("serviceWorker" in navigator&&location.protocol.indexOf("http")===0)navigator.serviceWorker.register("sw.js")</script>
 </body>
 </html>
